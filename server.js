@@ -166,7 +166,7 @@ io.on('connection', function (socket) {
 		if (perms) {
 			allow = false;
 			for (var x in socket.admin.permissions) {
-				if (perms.indexOf(x) !== -1) {
+				if (perms.indexOf(x) !== -1 && socket.admin.permissions == true) {
 					allow = true;
 					break;
 				}
@@ -221,7 +221,11 @@ io.on('connection', function (socket) {
 
 			res.on('end', function() {
 				console.log('>> config data: ', data);
-				data = JSON.parse(data);
+				if (data) {
+					try {
+						data = JSON.parse(data);
+					} catch (e) {}
+				}
 
 				if (data.user && data.user.id_admin) {
 					socket.id_admin = data.user.id_admin;
