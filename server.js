@@ -210,13 +210,29 @@ io.on('connection', function (socket) {
 			}
 		};
 
-		https.get(options, function(data) {
-			console.log('>> config response: ', data);
-			if (data.user && data.user.id_admin) {
-				socket.id_admin = data.user.id_admin;
-				socket.admin = data;
-			}
-			socket.emit('auth', {status: true});
+		https.get(options, function(res) {
+			var data = '';
+			
+			res.setEncoding('utf8');
+
+			response.on('data', function (chunk) {
+				data += chunk;
+			});
+
+			response.on('end', function() {
+				console.log('>> config data: ', data);
+				data = JSON.parse(data);
+
+				if (data.user && data.user.id_admin) {
+					socket.id_admin = data.user.id_admin;
+					socket.admin = data;
+					socket.emit('auth', {status: true});
+				} else {
+					socket.emit('auth', {status: false, message: 'user not logged in'});
+				}
+				
+			});
+
 		}).on('error', function (err) {
 			console.log('>> THERE WAS A CONNECTION ERROR');
 			console.log(err);
