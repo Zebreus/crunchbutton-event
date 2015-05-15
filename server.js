@@ -182,6 +182,8 @@ io.on('connection', function (socket) {
 		socket.phpsessid = payload.phpsessid;
 		socket.token = payload.token;
 		socket.apiHost = payload.host || 'beta.cockpit.la';
+		
+		console.log('>> connecting to ' + socket.apiHost);
 
 		var options = {
 			host: socket.apiHost,
