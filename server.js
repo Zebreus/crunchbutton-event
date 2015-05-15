@@ -5,6 +5,7 @@ var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 var port = process.env.PORT || 3696;
+var https = require('https');
 var http = require('http');
 var querystring = require('querystring');
 var bodyParser = require('body-parser');
@@ -16,6 +17,7 @@ server.listen(port, function () {
 });
 
 app.use(bodyParser.json());
+
 
 var sendBroadcast = function(payload, to, event) {
 
@@ -61,7 +63,6 @@ var sendBroadcast = function(payload, to, event) {
 	}
 }
 
-
 // from php
 app.post('/', function (req, res) {
 	if (req.body._key != key) {
@@ -73,6 +74,7 @@ app.post('/', function (req, res) {
 
 	res.send('{"status":"sent"}');
 });
+
 
 app.all('*', function (req, res) {
 	res.redirect(302, 'https://cockpit.la/');
