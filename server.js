@@ -194,7 +194,7 @@ io.on('connection', function (socket) {
 		};
 
 		var complete = function(data) {
-			console.log('config response: ', data);
+			console.log('>> config response: ', data);
 			if (data.user && data.user.id_admin) {
 				socket.id_admin = data.user.id_admin;
 				socket.admin = data;
@@ -202,8 +202,8 @@ io.on('connection', function (socket) {
 		};
 
 		var req = http.request(options, function(res) {
-			console.log('statusCode: ', res.statusCode);
-			console.log('headers: ', res.headers);
+			console.log('>> statusCode: ', res.statusCode);
+			console.log('>> headers: ', res.headers);
 
 			var str = '';
 			res.on('data', function (chunk) {
@@ -216,6 +216,7 @@ io.on('connection', function (socket) {
 		});
 
 		req.on('error', function (err) {
+			console.log('>> THERE WAS A CONNECTION ERROR');
 			console.log(err);
 		});
 
