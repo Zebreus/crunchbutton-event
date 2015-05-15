@@ -139,8 +139,36 @@ io.on('connection', function (socket) {
 
 	// listen for events
 	socket.on('event.subscribe', function (event) {
-		console.log('subscribing to ', event);
-		socket.join(event);
+		var perms;
+		var allow = true;
+
+		// support related stuff
+		if (event.match(/^(ticket|call)/i)) {
+			perms = ['GLOBAL', 'SUPPORT-ALL','SUPPORT-VIEW'];
+		// order and order page updates
+		} else if (event.match(/^order/i)) {
+			perms = ['GLOBAL', 'SUPPORT-ALL','SUPPORT-VIEW', 'ORDERS-LIST-PAGE', 'ORDERS-VIEW'];
+		// code deployment
+		} else if (event.match(/^deploy/i)) {
+			perms = ['GLOBAL'];
+		}
+		
+		if (perms) {
+			allow = false;
+			for (var x in socket.admin.permissions) {
+				if (perms.indexOf(x) !== -1) {
+					allow = true;
+					break;
+				}
+			}
+		}
+
+		if (allow) {
+			console.log('subscribing to ', event);
+			socket.join(event);
+		} else {
+			console.log('FAILED subscribing to ', event);
+		}
 	});
 	
 	// stop listening for events
@@ -169,6 +197,7 @@ io.on('connection', function (socket) {
 			console.log('config response: ', data);
 			if (data.user && data.user.id_admin) {
 				socket.id_admin = data.user.id_admin;
+				socket.admin = data;
 			}
 		};
 
