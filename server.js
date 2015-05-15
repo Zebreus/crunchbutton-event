@@ -18,7 +18,7 @@ server.listen(port, function () {
 app.use(bodyParser.json());
 
 var sendBroadcast = function(payload, to, event) {
-	
+
 	var sockets = {};
 
 	console.log('recieved broadcast...', to, event, payload);
@@ -55,7 +55,7 @@ var sendBroadcast = function(payload, to, event) {
 			}
 		});
 	}
-	
+
 	for (var x in sockets) {
 		sockets[x].emit(event, payload);
 	}
@@ -68,7 +68,7 @@ app.post('/', function (req, res) {
 		res.status(401).end();
 		return;
 	}
-	
+
 	sendBroadcast(req.body.payload, req.body.to, req.body.event);
 
 	res.send('{"status":"sent"}');
@@ -81,7 +81,7 @@ app.all('*', function (req, res) {
 io.on('connection', function (socket) {
 	var addedUser = false;
 	console.log('user connected...');
-	
+
 	socket.events = {};
 
 	// from socket
@@ -91,11 +91,11 @@ io.on('connection', function (socket) {
 
 	socket.on('event.message', function (payload) {
 		console.log('recieved message...', payload);
-		
+
 		if (!payload.url) {
 			return;
 		}
-		
+
 		var post = querystring.stringify(payload.data);
 
 		var options = {
@@ -118,7 +118,7 @@ io.on('connection', function (socket) {
 		var req = http.request(options, function(res) {
 			console.log('statusCode: ', res.statusCode);
 			console.log('headers: ', res.headers);
-			
+
 			res.setEncoding('utf8');
 			var str = '';
 			res.on('data', function (chunk) {
@@ -132,7 +132,7 @@ io.on('connection', function (socket) {
 		req.on('error', function (err) {
 			console.log(err);
 		});
-		
+
 		req.write(post);
 		req.end();
 	});
@@ -145,14 +145,17 @@ io.on('connection', function (socket) {
 		// support related stuff
 		if (event.match(/^(ticket|call)/i)) {
 			perms = ['GLOBAL', 'SUPPORT-ALL','SUPPORT-VIEW'];
-		// order and order page updates
+			// order and order page updates
 		} else if (event.match(/^order/i)) {
 			perms = ['GLOBAL', 'SUPPORT-ALL','SUPPORT-VIEW', 'ORDERS-LIST-PAGE', 'ORDERS-VIEW'];
-		// code deployment
+			// code deployment
 		} else if (event.match(/^deploy/i)) {
 			perms = ['GLOBAL'];
+			// only allow user preference on current user
+		} else if (event.match(/^user\.preference/i) && event != 'user.preference.' + socket.id_admin) {
+			perms = false;
 		}
-		
+
 		if (perms) {
 			allow = false;
 			for (var x in socket.admin.permissions) {
@@ -170,7 +173,7 @@ io.on('connection', function (socket) {
 			console.log('FAILED subscribing to ', event);
 		}
 	});
-	
+
 	// stop listening for events
 	socket.on('event.unsubscribe', function (event) {
 		console.log('unsubscribing to ', event);
@@ -182,7 +185,7 @@ io.on('connection', function (socket) {
 		socket.phpsessid = payload.phpsessid;
 		socket.token = payload.token;
 		socket.apiHost = payload.host || 'beta.cockpit.la';
-		
+
 		console.log('>> connecting to ' + socket.apiHost);
 
 		var options = {
@@ -195,31 +198,17 @@ io.on('connection', function (socket) {
 			}
 		};
 
-		var complete = function(data) {
+		https.get(options, function(data) {
 			console.log('>> config response: ', data);
 			if (data.user && data.user.id_admin) {
 				socket.id_admin = data.user.id_admin;
 				socket.admin = data;
 			}
-		};
-
-		var req = http.request(options, function(res) {
-			console.log('>> statusCode: ', res.statusCode);
-			console.log('>> headers: ', res.headers);
-
-			var str = '';
-			res.on('data', function (chunk) {
-				str += chunk;
-			});
-			res.on('end', function () {
-				complete(str);
-			});
-
-		});
-
-		req.on('error', function (err) {
+			socket.emit('auth', {status: true});
+		}).on('error', function (err) {
 			console.log('>> THERE WAS A CONNECTION ERROR');
 			console.log(err);
+			socket.emit('auth', {status: false, message: 'failed to connect to aythentication server'});
 		});
 
 	});
