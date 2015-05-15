@@ -141,6 +141,11 @@ io.on('connection', function (socket) {
 
 	// listen for events
 	socket.on('event.subscribe', function (event) {
+		if (!socket.id_admin) {
+			console.log('user not logged in when trying to subscribed to ', event);
+			return
+		}
+
 		var perms;
 		var allow = true;
 
@@ -178,6 +183,11 @@ io.on('connection', function (socket) {
 
 	// stop listening for events
 	socket.on('event.unsubscribe', function (event) {
+		if (!socket.id_admin) {
+			console.log('user not logged in when trying to unsubscribe to ', event);
+			return
+		}
+
 		console.log('unsubscribing to ', event);
 		socket.leave(event);
 	});
