@@ -215,11 +215,11 @@ io.on('connection', function (socket) {
 			
 			res.setEncoding('utf8');
 
-			response.on('data', function (chunk) {
+			res.on('data', function (chunk) {
 				data += chunk;
 			});
 
-			response.on('end', function() {
+			res.on('end', function() {
 				console.log('>> config data: ', data);
 				data = JSON.parse(data);
 
