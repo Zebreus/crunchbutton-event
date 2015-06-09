@@ -10,6 +10,19 @@ var http = require('http');
 var querystring = require('querystring');
 var bodyParser = require('body-parser');
 
+
+
+var redisUrl = process.env.REDIS_URL;
+var matches = redisUrl.match(/^(redis:\/\/)(.*):(.*)@(.*):([0-9]+)$/);
+
+var redis = require('redis').createClient;
+var adapter = require('socket.io-redis');
+var pub = redis(matches[5], matches[4], { auth_pass: matches[3] });
+//pub.auth(matches[3]);
+//var sub = redis(6779, 'ec2-54-235-152-160.compute-1.amazonaws.com', { detect_buffers: true, auth_pass: "p917q8nscb79gi3o6ap18h31pu9" });
+io.adapter(adapter({ pubClient: pub, subClient: pub }));
+
+
 var key = '***REMOVED***';
 
 server.listen(port, function () {
