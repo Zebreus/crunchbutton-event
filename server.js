@@ -11,17 +11,17 @@ var querystring = require('querystring');
 var bodyParser = require('body-parser');
 
 
+if (process.env.USE_REDIS) {
+	var redisUrl = process.env.REDIS_URL;
+	var matches = redisUrl.match(/^(redis:\/\/)(.*):(.*)@(.*):([0-9]+)$/);
 
-var redisUrl = process.env.REDIS_URL;
-var matches = redisUrl.match(/^(redis:\/\/)(.*):(.*)@(.*):([0-9]+)$/);
-
-var redis = require('redis').createClient;
-var adapter = require('socket.io-redis');
-var pub = redis(matches[5], matches[4], { auth_pass: matches[3] });
-//pub.auth(matches[3]);
-var sub = redis(matches[5], matches[4], { detect_buffers: true, auth_pass: matches[3] });
-io.adapter(adapter({ pubClient: pub, subClient: sub }));
-
+	var redis = require('redis').createClient;
+	var adapter = require('socket.io-redis');
+	var pub = redis(matches[5], matches[4], { auth_pass: matches[3] });
+	//pub.auth(matches[3]);
+	var sub = redis(matches[5], matches[4], { detect_buffers: true, auth_pass: matches[3] });
+	io.adapter(adapter({ pubClient: pub, subClient: sub }));
+}
 
 var key = '***REMOVED***';
 
