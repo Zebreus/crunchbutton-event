@@ -191,6 +191,7 @@ io.on('connection', function (socket) {
 			socket.join(event);
 		} else {
 			console.log('FAILED subscribing to ', event);
+			console.log('Permissions: ', socket.admin.permissions);
 		}
 	});
 
@@ -253,7 +254,7 @@ io.on('connection', function (socket) {
 		}).on('error', function (err) {
 			console.log('>> THERE WAS A CONNECTION ERROR');
 			console.log(err);
-			socket.emit('auth', {status: false, message: 'failed to connect to aythentication server'});
+			socket.emit('auth', {status: false, message: 'failed to connect to authentication server'});
 		});
 
 	});
