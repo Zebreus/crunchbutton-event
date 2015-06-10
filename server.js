@@ -163,7 +163,7 @@ io.on('connection', function (socket) {
 		var allow = true;
 
 		// support related stuff
-		if (event.match(/^(ticket|call)/i)) {
+		if (event.match(/^(ticket|call|chat)/i)) {
 			perms = ['GLOBAL', 'SUPPORT-ALL','SUPPORT-VIEW'];
 			// order and order page updates
 		} else if (event.match(/^order/i)) {
