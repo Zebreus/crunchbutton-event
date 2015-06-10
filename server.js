@@ -178,8 +178,8 @@ io.on('connection', function (socket) {
 
 		if (perms) {
 			allow = false;
-			for (var x in socket.admin.permissions) {
-				if (perms.indexOf(x) !== -1 && socket.admin.permissions == true) {
+			for (var x in socket.admin.user.permissions) {
+				if (perms.indexOf(x) !== -1 && socket.admin.user.permissions == true) {
 					allow = true;
 					break;
 				}
@@ -191,7 +191,7 @@ io.on('connection', function (socket) {
 			socket.join(event);
 		} else {
 			console.log('FAILED subscribing to ', event);
-			console.log('Permissions: ', socket.admin.permissions);
+			console.log('Permissions: ', socket.admin.user.permissions);
 		}
 	});
 
