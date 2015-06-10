@@ -178,9 +178,11 @@ io.on('connection', function (socket) {
 
 		if (perms) {
 			allow = false;
-			for (var x in socket.admin.user.permissions) {
-				if (perms.indexOf(x) !== -1 && socket.admin.user.permissions == true) {
-					allow = true;
+			for (var x in perms) {
+				if (socket.admin.user.permissions.indexOf(x) !== -1) {
+					if (socket.admin.user.permissions[x] == true) {
+						allow = true;
+					}
 					break;
 				}
 			}
