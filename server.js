@@ -179,7 +179,7 @@ io.on('connection', function (socket) {
 		if (perms) {
 			allow = false;
 			for (var x in perms) {
-				if (socket.admin.user.permissions.indexOf(x) !== -1) {
+				if (typeof socket.admin.user.permissions[x] != 'undefined') {
 					if (socket.admin.user.permissions[x] == true) {
 						allow = true;
 					}
