@@ -23,7 +23,7 @@ if (process.env.USE_REDIS) {
 	io.adapter(adapter({ pubClient: pub, subClient: sub }));
 }
 
-var key = '***REMOVED***';
+var key = process.env.REMOTE_KEY;
 
 server.listen(port, function () {
 	console.log('Server listening at port %d', port);
