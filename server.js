@@ -1,5 +1,7 @@
 // Setup basic express server
 
+var cockpitHost = process.env.COCKPIT_HOST || 'https://cockpit.la/'
+var cockpitBetaHost = process.env.COCKPIT_BETA_HOST || 'beta.cockpit.la'
 var express = require('express');
 var app = express();
 var server = require('http').createServer(app);
@@ -90,7 +92,7 @@ app.post('/', function (req, res) {
 
 
 app.all('*', function (req, res) {
-	res.redirect(302, 'https://cockpit.la/');
+	res.redirect(302, cockpitHost);
 });
 
 io.on('connection', function (socket) {
@@ -114,7 +116,7 @@ io.on('connection', function (socket) {
 		var post = querystring.stringify(payload.data);
 
 		var options = {
-			host: socket.apiHost || 'beta.cockpit.la',
+			host: socket.apiHost || cockpitBetaHost,
 			path: payload.url,
 			port: '80',
 			method: 'POST',
@@ -213,7 +215,7 @@ io.on('connection', function (socket) {
 	socket.on('auth', function (payload) {
 		socket.phpsessid = payload.phpsessid;
 		socket.token = payload.token;
-		socket.apiHost = payload.host || 'beta.cockpit.la';
+		socket.apiHost = payload.host || cockpitBetaHost;
 
 		console.log('>> connecting to ' + socket.apiHost);
 
